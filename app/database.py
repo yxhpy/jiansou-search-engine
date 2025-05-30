@@ -8,7 +8,7 @@ import logging
 import time
 from typing import Generator
 
-from .config import DatabaseConfig, AppConfig
+from .config import Config as DatabaseConfig, AppConfig
 
 logger = logging.getLogger(__name__)
 
