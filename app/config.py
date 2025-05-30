@@ -40,7 +40,7 @@ class AppConfig:
     """应用配置"""
     TITLE = "简搜 API"
     DESCRIPTION = "简洁高效的搜索引擎API"
-    VERSION = "1.0.0"
+    VERSION = "2.0.0"
     
     # 服务器配置
     HOST = Config.APP_HOST

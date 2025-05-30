@@ -19,7 +19,7 @@ services:
       start_period: 40s
     labels:
       - "com.jiansou.description=简搜 - 简洁高效的搜索工具"
-      - "com.jiansou.version=2.0"
+      - "com.jiansou.version=2.0.0"
     # 可选：如果需要持久化数据，可以添加volumes
     # volumes:
     #   - ./data:/app/data
