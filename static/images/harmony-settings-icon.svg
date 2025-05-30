@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 鸿蒙设置渐变 -->
+    <radialGradient id="settingsGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#007DFF;stop-opacity:0.8" />
+      <stop offset="70%" style="stop-color:#0A59F7;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
+    </radialGradient>
+    <!-- 内部渐变 -->
+    <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#F0F8FF;stop-opacity:0.7" />
+    </linearGradient>
+    <!-- 柔和阴影 -->
+    <filter id="settingShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#007DFF" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  
+  <!-- 外圈齿轮 - 简化的鸿蒙风格 -->
+  <g filter="url(#settingShadow)">
+    <!-- 主体圆形 -->
+    <circle cx="24" cy="24" r="18" fill="url(#settingsGradient)"/>
+    
+    <!-- 简化的齿轮齿 -->
+    <rect x="22" y="4" width="4" height="6" rx="2" fill="url(#settingsGradient)"/>
+    <rect x="22" y="38" width="4" height="6" rx="2" fill="url(#settingsGradient)"/>
+    <rect x="4" y="22" width="6" height="4" rx="2" fill="url(#settingsGradient)"/>
+    <rect x="38" y="22" width="6" height="4" rx="2" fill="url(#settingsGradient)"/>
+    
+    <!-- 对角齿 -->
+    <rect x="35.5" y="10.5" width="4" height="4" rx="2" fill="url(#settingsGradient)" transform="rotate(45 37.5 12.5)"/>
+    <rect x="8.5" y="10.5" width="4" height="4" rx="2" fill="url(#settingsGradient)" transform="rotate(-45 10.5 12.5)"/>
+    <rect x="35.5" y="33.5" width="4" height="4" rx="2" fill="url(#settingsGradient)" transform="rotate(-45 37.5 35.5)"/>
+    <rect x="8.5" y="33.5" width="4" height="4" rx="2" fill="url(#settingsGradient)" transform="rotate(45 10.5 35.5)"/>
+  </g>
+  
+  <!-- 内圈 -->
+  <circle cx="24" cy="24" r="10" fill="url(#innerGradient)" stroke="#007DFF" stroke-width="1"/>
+  
+  <!-- 中心圆 -->
+  <circle cx="24" cy="24" r="5" fill="#007DFF" opacity="0.8"/>
+  
+  <!-- 中心点 -->
+  <circle cx="24" cy="24" r="2" fill="#FFFFFF"/>
+  
+  <!-- 装饰性高光 -->
+  <circle cx="20" cy="20" r="2" fill="#FFFFFF" opacity="0.4"/>
+  <circle cx="28" cy="18" r="1.5" fill="#FFFFFF" opacity="0.3"/>
+</svg> 

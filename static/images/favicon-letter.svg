@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 渐变背景 -->
+    <linearGradient id="letterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#007DFF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0A59F7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
+    </linearGradient>
+    <!-- 文字渐变 -->
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0F2FE;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景圆角矩形 -->
+  <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#letterGradient)" stroke="#FFFFFF" stroke-width="1"/>
+  
+  <!-- 简化的"简"字设计 -->
+  <g fill="url(#textGradient)">
+    <!-- 上横 -->
+    <rect x="8" y="9" width="16" height="2.5" rx="1.25"/>
+    <!-- 中竖 -->
+    <rect x="15" y="9" width="2.5" height="14" rx="1.25"/>
+    <!-- 左竖 -->
+    <rect x="10" y="13" width="2" height="10" rx="1"/>
+    <!-- 右竖 -->
+    <rect x="20" y="13" width="2" height="10" rx="1"/>
+    <!-- 下横 -->
+    <rect x="10" y="21" width="12" height="2" rx="1"/>
+  </g>
+  
+  <!-- 装饰点 -->
+  <circle cx="26" cy="8" r="1.5" fill="#FFFFFF" opacity="0.6"/>
+</svg> 

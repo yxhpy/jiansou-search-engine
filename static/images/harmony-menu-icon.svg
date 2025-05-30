@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 鸿蒙渐变色 -->
+    <linearGradient id="harmonyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#007DFF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0A59F7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
+    </linearGradient>
+    <!-- 柔和阴影 -->
+    <filter id="menuShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#007DFF" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- 背景容器 -->
+  <rect x="4" y="4" width="40" height="40" rx="12" fill="#F8FAFF" stroke="#E8F4FF" stroke-width="1"/>
+  
+  <!-- 菜单线条 - 鸿蒙风格的圆润线条 -->
+  <rect x="12" y="16" width="24" height="3" rx="1.5" fill="url(#harmonyGradient)" filter="url(#menuShadow)"/>
+  <rect x="12" y="22.5" width="18" height="3" rx="1.5" fill="url(#harmonyGradient)" filter="url(#menuShadow)" opacity="0.8"/>
+  <rect x="12" y="29" width="21" height="3" rx="1.5" fill="url(#harmonyGradient)" filter="url(#menuShadow)" opacity="0.6"/>
+  
+  <!-- 装饰性元素 - 体现简搜的简洁特色 -->
+  <circle cx="38" cy="18" r="2" fill="#007DFF" opacity="0.3"/>
+  <circle cx="35" cy="24" r="1.5" fill="#0A59F7" opacity="0.4"/>
+  <circle cx="37" cy="30" r="1.8" fill="#1890FF" opacity="0.3"/>
+  
+  <!-- 微妙的高光 -->
+  <rect x="12" y="16" width="24" height="1" rx="0.5" fill="#FFFFFF" opacity="0.4"/>
+</svg> 
