@@ -3,6 +3,10 @@
 """
 import os
 from urllib.parse import quote_plus
+from dotenv import load_dotenv
+
+# 加载 .env 文件
+load_dotenv()
 
 
 class Config:
