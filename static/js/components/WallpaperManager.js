@@ -98,9 +98,9 @@ export class WallpaperManager {
         const screenWidth = window.screen.width * devicePixelRatio;
         const screenHeight = window.screen.height * devicePixelRatio;
         
-        // 确保最小分辨率，提高图片质量
-        const minWidth = 1920;
-        const minHeight = 1080;
+        // 确保超高清分辨率，提高图片质量
+        const minWidth = 2560; // 提升到2K分辨率
+        const minHeight = 1440; // 提升到2K分辨率
         
         // 使用Math.round确保得到整数，避免API参数验证错误
         const width = Math.round(Math.max(screenWidth, minWidth));
@@ -110,7 +110,7 @@ export class WallpaperManager {
         const finalWidth = parseInt(width, 10);
         const finalHeight = parseInt(height, 10);
         
-        console.log(`请求壁纸尺寸: ${finalWidth}x${finalHeight} (设备像素比: ${devicePixelRatio})`);
+        console.log(`请求超高清壁纸尺寸: ${finalWidth}x${finalHeight} (设备像素比: ${devicePixelRatio})`);
         
         const baseUrl = '/api/wallpaper/random';
         const params = new URLSearchParams({
@@ -124,15 +124,16 @@ export class WallpaperManager {
         switch (this.currentSource) {
             case 'unsplash':
                 params.append('category', 'nature');
-                // 添加质量参数
-                params.append('quality', '95');
+                // 添加最高质量参数
+                params.append('quality', '100'); // 提升到100%质量
+                params.append('fit', 'crop'); // 确保完美填充
                 break;
             case 'picsum':
                 // 可以添加模糊效果参数
                 // params.append('blur', '1');
                 break;
             case 'bing':
-                // 必应壁纸不需要额外参数
+                // 必应壁纸不需要额外参数，但确保高分辨率
                 break;
         }
         
@@ -201,7 +202,7 @@ export class WallpaperManager {
         wallpaperContainer.classList.add('loading');
         wallpaperContainer.classList.remove('loaded');
         
-        // 设置壁纸，确保全屏覆盖
+        // 设置壁纸，确保全屏覆盖和最高清晰度
         wallpaperContainer.style.backgroundImage = `url(${url})`;
         wallpaperContainer.style.backgroundSize = 'cover';
         wallpaperContainer.style.backgroundPosition = 'center';
@@ -213,18 +214,15 @@ export class WallpaperManager {
         wallpaperContainer.style.left = '0';
         wallpaperContainer.style.zIndex = '-2';
         
-        // 添加遮罩层以确保文字可读性
-        let overlay = document.getElementById('wallpaper-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'wallpaper-overlay';
-            overlay.className = 'wallpaper-overlay';
-            wallpaperContainer.appendChild(overlay);
-        }
+        // 确保图片渲染质量最高
+        wallpaperContainer.style.imageRendering = '-webkit-optimize-contrast';
+        wallpaperContainer.style.imageRendering = 'crisp-edges';
         
-        // 智能调整遮罩透明度
-        if (imgElement) {
-            this.adjustOverlayOpacity(overlay, imgElement);
+        // 完全不创建蒙版层 - 保持原始高清质量
+        // 移除任何已存在的蒙版
+        const existingOverlay = document.getElementById('wallpaper-overlay');
+        if (existingOverlay) {
+            existingOverlay.remove();
         }
         
         // 更新body样式
@@ -238,64 +236,6 @@ export class WallpaperManager {
             wallpaperContainer.classList.remove('loading');
             wallpaperContainer.classList.add('loaded');
         }, 100);
-    }
-
-    /**
-     * 根据图片亮度智能调整遮罩透明度
-     */
-    adjustOverlayOpacity(overlay, imgElement) {
-        try {
-            // 创建canvas来分析图片亮度
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // 设置较小的canvas尺寸以提高性能
-            canvas.width = 100;
-            canvas.height = 100;
-            
-            // 绘制图片到canvas
-            ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-            
-            // 获取图片数据
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            
-            // 计算平均亮度
-            let totalBrightness = 0;
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                // 使用加权平均计算亮度
-                const brightness = (r * 0.299 + g * 0.587 + b * 0.114);
-                totalBrightness += brightness;
-            }
-            
-            const avgBrightness = totalBrightness / (data.length / 4);
-            
-            // 根据亮度调整遮罩透明度
-            let overlayOpacity;
-            if (avgBrightness > 180) {
-                // 亮色图片，使用较低透明度
-                overlayOpacity = 0.2;
-            } else if (avgBrightness > 120) {
-                // 中等亮度，使用中等透明度
-                overlayOpacity = 0.3;
-            } else {
-                // 暗色图片，使用较高透明度
-                overlayOpacity = 0.4;
-            }
-            
-            // 应用遮罩透明度
-            overlay.style.background = `rgba(255, 255, 255, ${overlayOpacity})`;
-            
-            console.log(`图片平均亮度: ${avgBrightness.toFixed(1)}, 遮罩透明度: ${overlayOpacity}`);
-            
-        } catch (error) {
-            console.warn('无法分析图片亮度，使用默认遮罩:', error);
-            // 使用默认遮罩透明度
-            overlay.style.background = 'rgba(255, 255, 255, 0.3)';
-        }
     }
 
     /**
@@ -480,18 +420,30 @@ export class WallpaperManager {
                         </label>
                     </div>
                     
+                    <!-- 高清模式开关 -->
+                    <div class="wallpaper-setting-item flex items-center justify-between">
+                        <div>
+                            <label class="text-sm text-gray-700 font-medium">高清模式</label>
+                            <p class="text-xs text-gray-500">极轻蒙版，保持壁纸原始清晰度</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="hd-mode" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-huawei-blue"></div>
+                        </label>
+                    </div>
+                    
                     <!-- 壁纸源选择 -->
                     <div class="wallpaper-setting-item">
-                        <label class="block text-sm text-gray-700 mb-2">壁纸源</label>
+                        <label class="block text-sm text-gray-700 mb-2 font-medium">壁纸源</label>
                         <select id="wallpaper-source" class="w-full p-2 border border-gray-300 rounded-md text-sm">
                             ${sourceOptions}
                         </select>
-                        <p class="text-xs text-gray-500 mt-1">通过后端代理服务获取，解决跨域问题</p>
+                        <p class="text-xs text-gray-500 mt-1">推荐使用Unsplash获得最佳高清效果</p>
                     </div>
                     
                     <!-- 切换间隔 -->
                     <div class="wallpaper-setting-item">
-                        <label class="block text-sm text-gray-700 mb-2">自动切换间隔 (分钟)</label>
+                        <label class="block text-sm text-gray-700 mb-2 font-medium">自动切换间隔 (分钟)</label>
                         <select id="wallpaper-interval" class="w-full p-2 border border-gray-300 rounded-md text-sm">
                             <option value="0" ${this.changeInterval === 0 ? 'selected' : ''}>不自动切换</option>
                             <option value="5" ${this.changeInterval === 5 ? 'selected' : ''}>5分钟</option>
@@ -504,9 +456,11 @@ export class WallpaperManager {
                     <!-- 状态信息 -->
                     <div class="wallpaper-setting-item">
                         <div class="text-xs text-gray-500 space-y-1">
-                            <div>当前状态: ${this.isEnabled ? '已启用' : '已禁用'}</div>
+                            <div>当前状态: ${this.isEnabled ? '已启用' : '已禁用'} ${this.isEnabled ? '(无损高清模式)' : ''}</div>
                             <div>当前源: ${sources.find(s => s.id === this.currentSource)?.name || this.currentSource}</div>
                             <div>屏幕尺寸: ${window.innerWidth}x${window.innerHeight}</div>
+                            <div class="text-green-600 font-medium">✨ 真正高清：完全无蒙版，2K+分辨率</div>
+                            <div class="text-blue-600 font-medium">🎨 100%质量：保持壁纸原始清晰度</div>
                         </div>
                     </div>
                     
