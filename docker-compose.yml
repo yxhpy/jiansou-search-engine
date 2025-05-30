@@ -1,0 +1,27 @@
+name: jiansou
+
+services:
+  jiansou:
+    build: .
+    container_name: jiansou-app
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - APP_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.jiansou.description=简搜 - 简洁高效的搜索工具"
+      - "com.jiansou.version=2.0"
+    # 可选：如果需要持久化数据，可以添加volumes
+    # volumes:
+    #   - ./data:/app/data
+    # 确保宿主机数据目录存在
+    depends_on: [] 

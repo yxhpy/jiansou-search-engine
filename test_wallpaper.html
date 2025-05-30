@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>壁纸功能测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+</head>
+<body class="bg-white min-h-screen">
+    <nav class="w-full py-4 px-8">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="text-lg font-medium">壁纸功能测试</div>
+            <div class="hidden sm:flex space-x-8">
+                <a href="#" class="nav-link text-sm">测试</a>
+                <!-- 壁纸按钮将在这里添加 -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-grow flex flex-col items-center justify-center px-8 pt-20 pb-12">
+        <h1 class="text-4xl font-light mb-8">壁纸功能测试</h1>
+        <div class="space-y-4 text-center">
+            <p class="text-gray-600">点击导航栏的"壁纸"按钮来测试功能</p>
+            <p class="text-gray-600">或按 <kbd class="bg-gray-200 px-2 py-1 rounded">W</kbd> 键切换壁纸</p>
+            <div class="mt-8">
+                <button id="manual-test-btn" class="btn btn-primary">
+                    <i class="fas fa-image mr-2"></i>手动测试壁纸
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-indicator" class="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50 hidden">
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-3xl text-blue-500 mb-4"></i>
+            <p class="text-gray-600">加载中...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { WallpaperManager } from '/static/js/components/WallpaperManager.js';
+        
+        // 初始化壁纸管理器
+        const wallpaperManager = new WallpaperManager();
+        
+        // 手动测试按钮
+        document.getElementById('manual-test-btn').addEventListener('click', () => {
+            wallpaperManager.changeWallpaper();
+        });
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'w' || e.key === 'W') {
+                if (!['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+                    e.preventDefault();
+                    wallpaperManager.changeWallpaper();
+                }
+            }
+        });
+        
+        console.log('壁纸测试页面已加载');
+    </script>
+</body>
+</html> 

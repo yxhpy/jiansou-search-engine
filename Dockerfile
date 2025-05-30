@@ -1,0 +1,48 @@
+# 使用Python 3.11作为基础镜像
+FROM python:3.11-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 设置环境变量
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# 复制依赖文件
+COPY requirements.txt .
+
+# 安装Python依赖和必要的系统工具
+RUN pip install --no-cache-dir -r requirements.txt && \
+    apt-get update && \
+    apt-get install -y curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# 创建非root用户
+RUN adduser --disabled-password --gecos '' appuser
+
+# 复制应用代码
+COPY . .
+
+# 确保新版本文件存在
+RUN ls -la /app/main_new.py /app/index_new.html /app/app/ || exit 1
+
+# 设置启动脚本权限
+RUN chmod +x start.sh
+
+# 设置应用权限
+RUN chown -R appuser:appuser /app && \
+    chmod -R 755 /app
+
+# 切换到非root用户
+USER appuser
+
+# 暴露端口
+EXPOSE 8000
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/ || exit 1
+
+# 使用启动脚本
+CMD ["./start.sh"] 
