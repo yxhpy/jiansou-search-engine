@@ -116,7 +116,18 @@ export class SearchBox {
         });
 
         events.on(searchInput, 'focus', () => {
+            this.hideQuickLinks();
             this.showSearchSuggestions();
+        });
+
+        events.on(searchInput, 'blur', () => {
+            // 延迟检查，给用户点击搜索建议的时间
+            setTimeout(() => {
+                if (!searchInput.value.trim() && !dom.get('#search-engines-dropdown.show')) {
+                    this.showQuickLinks();
+                }
+                this.hideSearchSuggestions();
+            }, 200);
         });
 
         events.on(searchInput, 'keydown', (e) => {
@@ -126,6 +137,7 @@ export class SearchBox {
             } else if (e.key === 'Escape') {
                 this.hideSearchSuggestions();
                 searchInput.blur();
+                this.showQuickLinks();
             }
         });
 
@@ -226,6 +238,21 @@ export class SearchBox {
         this.renderSearchEngineSelect();
         this.hideEnginesDropdown();
         events.emit(document, EVENTS.SEARCH_ENGINE_CHANGED, engineName);
+        
+        // 立即聚焦搜索输入框
+        const searchInput = dom.get('#search-input');
+        searchInput.focus();
+        
+        // 选择搜索引擎后，如果搜索框为空，显示快链
+        if (!searchInput.value.trim()) {
+            // 延迟显示，等待下拉菜单完全关闭
+            setTimeout(() => {
+                // 检查搜索框是否仍然为空且没有焦点
+                if (!searchInput.value.trim() && document.activeElement !== searchInput) {
+                    this.showQuickLinks();
+                }
+            }, 250);
+        }
     }
 
     /**
@@ -264,6 +291,12 @@ export class SearchBox {
             
             // 清空搜索框
             searchInput.value = '';
+            
+            // 隐藏搜索建议
+            this.hideSearchSuggestions();
+            
+            // 恢复快链显示
+            this.showQuickLinks();
             
             showSuccess(`已使用 ${result.search_engine} 搜索`);
 
@@ -341,6 +374,9 @@ export class SearchBox {
         dropdown.classList.add('show');
         indicator.classList.add('active');
         
+        // 隐藏快链
+        this.hideQuickLinks();
+        
         // 添加动画效果
         setTimeout(() => {
             dropdown.classList.add('animate');
@@ -359,6 +395,11 @@ export class SearchBox {
         
         setTimeout(() => {
             dropdown.classList.remove('show');
+            // 检查是否应该显示快链
+            const searchInput = dom.get('#search-input');
+            if (!searchInput.value.trim() && document.activeElement !== searchInput) {
+                this.showQuickLinks();
+            }
         }, 200);
     }
 
@@ -367,9 +408,15 @@ export class SearchBox {
      */
     handleInputChange(value) {
         if (value.trim()) {
+            this.hideQuickLinks();
             this.showSearchSuggestions(value);
         } else {
             this.hideSearchSuggestions();
+            // 如果输入框为空且没有焦点，显示快链
+            const searchInput = dom.get('#search-input');
+            if (document.activeElement !== searchInput && !dom.get('#search-engines-dropdown.show')) {
+                this.showQuickLinks();
+            }
         }
     }
 
@@ -432,5 +479,36 @@ export class SearchBox {
      */
     setSearchEngine(engineName) {
         this.selectSearchEngine(engineName);
+    }
+
+    /**
+     * 隐藏快链
+     */
+    hideQuickLinks() {
+        const quickLinksSection = dom.get('#quick-links-section');
+        if (quickLinksSection) {
+            quickLinksSection.style.display = 'none';
+        }
+    }
+
+    /**
+     * 显示快链
+     */
+    showQuickLinks() {
+        const quickLinksSection = dom.get('#quick-links-section');
+        if (quickLinksSection) {
+            quickLinksSection.style.display = '';
+            // 初始状态：稍微向下偏移，透明
+            quickLinksSection.style.opacity = '0';
+            quickLinksSection.style.visibility = 'visible';
+            quickLinksSection.style.transform = 'translateY(8px)';
+            quickLinksSection.style.transition = 'all 0.5s ease-out';
+            
+            // 延迟一帧后开始动画，确保初始状态被应用
+            requestAnimationFrame(() => {
+                quickLinksSection.style.opacity = '1';
+                quickLinksSection.style.transform = 'translateY(0)';
+            });
+        }
     }
 } 

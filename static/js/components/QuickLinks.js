@@ -38,13 +38,13 @@ export class QuickLinks {
             <div class="quick-links-section">
                 <!-- 分类筛选 -->
                 <div class="mb-6">
-                    <div class="flex flex-wrap gap-2 justify-center" id="category-filters">
+                    <div class="flex gap-2 justify-center overflow-x-auto whitespace-nowrap md:flex-wrap md:justify-center" id="category-filters">
                         <span class="category-tag active" data-category="all">全部</span>
                     </div>
                 </div>
                 
                 <!-- 快速链接网格 -->
-                <div class="quick-links-container" id="quick-links-grid">
+                <div class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-4" id="quick-links-grid">
                     <!-- 快速链接项将通过JavaScript动态生成 -->
                 </div>
                 
@@ -135,11 +135,10 @@ export class QuickLinks {
         grid.innerHTML = this.quickLinks.map(link => `
             <div class="quick-link-item" data-id="${link.id}">
                 <a href="${link.url}" target="_blank" title="${link.name}">
-                    <div class="quick-link-icon" style="background: ${link.color}20; color: ${link.color}">
+                    <div class="quick-link-icon" style="color: ${link.color}">
                         ${this.renderIcon(link)}
                     </div>
                     <div class="quick-link-name">${link.name}</div>
-                    ${link.category ? `<div class="quick-link-category">${link.category}</div>` : ''}
                 </a>
             </div>
         `).join('');
