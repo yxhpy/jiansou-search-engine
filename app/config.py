@@ -38,6 +38,11 @@ class AppConfig:
     DESCRIPTION = "简洁高效的搜索引擎API"
     VERSION = "1.0.0"
     
+    # 服务器配置
+    HOST = Config.APP_HOST
+    PORT = Config.APP_PORT
+    DEBUG = Config.APP_DEBUG
+    
     # 重试配置
     MAX_RETRIES = 3
     RETRY_DELAY = 1  # 秒
