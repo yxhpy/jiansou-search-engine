@@ -1,5 +1,5 @@
 ﻿# 浣跨敤Python 3.11浣滀负鍩虹闀滃儚 - 浣跨敤闃块噷浜戦暅鍍忔簮
-FROM python:3.11-slim
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/python:3.11-slim
 
 # 璁剧疆宸ヤ綔鐩綍
 WORKDIR /app
