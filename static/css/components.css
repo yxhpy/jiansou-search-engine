@@ -18,6 +18,12 @@
 .search-container {
     position: relative;
     transition: var(--transition-base);
+    z-index: 100;
+}
+
+#search-container {
+    position: relative;
+    z-index: 100;
 }
 
 .search-container:focus-within {
@@ -80,9 +86,17 @@
 /* 快速链接容器 */
 .quick-links-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 1rem;
     padding: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* 快速链接区域 */
+#quick-links-section {
+    position: relative;
+    z-index: 1;
 }
 
 /* 快速链接项目 - 现代化卡片设计 */
@@ -93,7 +107,8 @@
         rgba(248, 250, 252, 0.8) 100%);
     border: 1px solid rgba(226, 232, 240, 0.8);
     border-radius: 16px;
-    padding: 1.25rem 1rem;
+    padding: 1rem;
+    aspect-ratio: 1.2 / 1;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     overflow: hidden;
@@ -101,6 +116,7 @@
     box-shadow: 
         0 4px 20px rgba(0, 0, 0, 0.04),
         0 1px 3px rgba(0, 0, 0, 0.06);
+    z-index: 1;
 }
 
 /* 快速链接悬浮效果 */
@@ -114,6 +130,7 @@
         0 20px 40px rgba(0, 0, 0, 0.1),
         0 8px 16px rgba(0, 125, 255, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    z-index: 2;
 }
 
 /* 快速链接激活效果 */
@@ -136,14 +153,14 @@
 
 /* 快速链接图标容器 */
 .quick-link-icon {
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 0.75rem;
-    font-size: 1.25rem;
+    margin: 0 auto 0.5rem;
+    font-size: 1.125rem;
     position: relative;
     background: linear-gradient(135deg, 
         rgba(0, 125, 255, 0.1) 0%, 
@@ -194,10 +211,10 @@
 .quick-link-name {
     font-weight: 600;
     color: var(--huawei-text);
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     text-align: center;
     line-height: 1.3;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -678,11 +695,13 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    z-index: 100;
 }
 
 .search-form-modern {
     position: relative;
     width: 100%;
+    z-index: 100;
 }
 
 .search-box-container {
@@ -695,6 +714,7 @@
     border: 1px solid rgba(0, 0, 0, 0.06);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    z-index: 100;
 }
 
 .search-box-container:hover {
@@ -809,7 +829,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 1100;
     margin-top: 8px;
     opacity: 0;
     visibility: hidden;
@@ -904,7 +924,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    z-index: 999;
+    z-index: 1100;
     margin-top: 8px;
     opacity: 0;
     visibility: hidden;

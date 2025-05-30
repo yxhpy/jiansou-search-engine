@@ -44,7 +44,7 @@ export class QuickLinks {
                 </div>
                 
                 <!-- 快速链接网格 -->
-                <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3" id="quick-links-grid">
+                <div class="quick-links-container" id="quick-links-grid">
                     <!-- 快速链接项将通过JavaScript动态生成 -->
                 </div>
                 

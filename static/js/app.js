@@ -268,7 +268,6 @@ class App {
             }
 
             await Promise.all(promises);
-            showSuccess('数据刷新成功');
             
         } catch (error) {
             console.error('刷新数据失败:', error);
