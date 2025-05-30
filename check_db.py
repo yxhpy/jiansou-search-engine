@@ -4,6 +4,8 @@
 用于验证MySQL8连接是否正常
 """
 
+import os
+import sys
 import pymysql
 import logging
 from sqlalchemy import create_engine, text
@@ -15,12 +17,17 @@ logger = logging.getLogger(__name__)
 
 def test_mysql_connection():
     """测试MySQL连接"""
-    # MySQL 8 连接配置
-    MYSQL_HOST = "rm-bp14l1x39idnx386k3o.mysql.rds.aliyuncs.com"
-    MYSQL_USER = "search"
-    MYSQL_PASSWORD = "search@123"
-    MYSQL_DATABASE = "search"
-    MYSQL_PORT = 3306
+    # 从环境变量获取MySQL配置
+    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+    MYSQL_USER = os.getenv("MYSQL_USER", "search")
+    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "search")
+    MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
+    
+    # 检查必需的环境变量
+    if not MYSQL_PASSWORD:
+        logger.error("MYSQL_PASSWORD 环境变量未设置")
+        return False
     
     logger.info(f"测试MySQL连接: {MYSQL_HOST}:{MYSQL_PORT}")
     

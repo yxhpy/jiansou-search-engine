@@ -26,12 +26,17 @@ def setup_database():
     """设置数据库连接"""
     global engine, SessionLocal, MYSQL_DATABASE_URL
     
-    # MySQL 8 连接配置
-    MYSQL_HOST = "rm-bp14l1x39idnx386k3o.mysql.rds.aliyuncs.com"
-    MYSQL_USER = "search"
-    MYSQL_PASSWORD = "search@123"
-    MYSQL_DATABASE = "search"
-    MYSQL_PORT = 3306
+    # 从环境变量获取MySQL配置
+    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+    MYSQL_USER = os.getenv("MYSQL_USER", "search")
+    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "search")
+    MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
+    
+    # 检查必需的环境变量
+    if not MYSQL_PASSWORD:
+        logger.error("MYSQL_PASSWORD 环境变量未设置")
+        return False
     
     # MySQL连接URL
     MYSQL_DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{quote_plus(MYSQL_PASSWORD)}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4"

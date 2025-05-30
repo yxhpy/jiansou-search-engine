@@ -133,11 +133,11 @@
 
 ```bash
 # 数据库配置
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=search
-DB_PASSWORD=search@123
-DB_NAME=search
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=search
+MYSQL_PASSWORD=your_secure_password_here
+MYSQL_DATABASE=search
 
 # 应用配置
 APP_HOST=0.0.0.0

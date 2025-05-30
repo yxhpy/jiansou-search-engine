@@ -5,18 +5,23 @@ import os
 from urllib.parse import quote_plus
 
 
-class DatabaseConfig:
-    """数据库配置"""
-    # MySQL 8 连接配置
-    MYSQL_HOST = "rm-bp14l1x39idnx386k3o.mysql.rds.aliyuncs.com"
-    MYSQL_USER = "search"
-    MYSQL_PASSWORD = "search@123"
-    MYSQL_DATABASE = "search"
-    MYSQL_PORT = 3306
+class Config:
+    # 数据库配置 - 使用环境变量
+    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+    MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
+    MYSQL_USER = os.getenv("MYSQL_USER", "search")
+    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")  # 不提供默认密码
+    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "search")
+    
+    # 应用配置
+    APP_HOST = os.getenv("APP_HOST", "0.0.0.0")
+    APP_PORT = int(os.getenv("APP_PORT", "8000"))
+    APP_DEBUG = os.getenv("APP_DEBUG", "false").lower() == "true"
     
     @classmethod
     def get_database_url(cls):
-        """获取数据库连接URL"""
+        if not cls.MYSQL_PASSWORD:
+            raise ValueError("MYSQL_PASSWORD environment variable is required")
         return f"mysql+pymysql://{cls.MYSQL_USER}:{quote_plus(cls.MYSQL_PASSWORD)}@{cls.MYSQL_HOST}:{cls.MYSQL_PORT}/{cls.MYSQL_DATABASE}?charset=utf8mb4"
     
     # 数据库引擎配置
@@ -32,10 +37,6 @@ class AppConfig:
     TITLE = "简搜 API"
     DESCRIPTION = "简洁高效的搜索引擎API"
     VERSION = "1.0.0"
-    
-    # 服务器配置
-    HOST = "0.0.0.0"
-    PORT = 8000
     
     # 重试配置
     MAX_RETRIES = 3
