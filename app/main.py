@@ -64,6 +64,10 @@ app.include_router(quick_links.router)
 app.include_router(search_engines.router)
 app.include_router(search.router)
 
+# 导入认证路由
+from .routers import auth
+app.include_router(auth.router)
+
 # 导入壁纸路由
 from .routers import wallpaper
 app.include_router(wallpaper.router)
@@ -73,6 +77,18 @@ app.include_router(wallpaper.router)
 def read_index():
     """返回首页"""
     return FileResponse("index_new.html")
+
+
+@app.get("/auth-test")
+def auth_test():
+    """返回认证测试页面"""
+    return FileResponse("auth_test.html")
+
+
+@app.get("/test-auth")
+def test_auth():
+    """返回认证功能测试页面"""
+    return FileResponse("test_auth.html")
 
 
 # 挂载静态文件（如果有的话）

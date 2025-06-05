@@ -8,7 +8,7 @@ import time
 import json
 import os
 
-from ..config import AppConfig
+from ..config import AppConfig, DefaultData
 from .quick_link_service import QuickLinkService
 from .search_engine_service import SearchEngineService
 
@@ -115,5 +115,78 @@ class DataInitService:
             return True
         except Exception as e:
             logger.error(f"从JSON文件加载快速链接数据失败: {e}")
+            db.rollback()
+            return False
+    
+    @staticmethod
+    def init_user_default_data(db: Session, user_id: int) -> bool:
+        """为新用户初始化默认数据"""
+        try:
+            logger.info(f"为用户 {user_id} 初始化默认数据")
+            
+            # 初始化用户的默认快速链接
+            success = DataInitService._init_user_quick_links(db, user_id)
+            if not success:
+                logger.error(f"用户 {user_id} 快速链接初始化失败")
+                return False
+            
+            # 初始化用户的默认搜索引擎
+            success = DataInitService._init_user_search_engines(db, user_id)
+            if not success:
+                logger.error(f"用户 {user_id} 搜索引擎初始化失败")
+                return False
+            
+            logger.info(f"用户 {user_id} 默认数据初始化完成")
+            return True
+            
+        except Exception as e:
+            logger.error(f"用户 {user_id} 默认数据初始化失败: {e}")
+            db.rollback()
+            return False
+    
+    @staticmethod
+    def _init_user_quick_links(db: Session, user_id: int) -> bool:
+        """为用户初始化默认快速链接"""
+        try:
+            from ..models import QuickLink
+            for link_data in DefaultData.DEFAULT_QUICK_LINKS:
+                db_link = QuickLink(
+                    name=link_data["name"],
+                    url=link_data["url"],
+                    icon=link_data["icon"],
+                    color=link_data["color"],
+                    category=link_data["category"],
+                    user_id=user_id
+                )
+                db.add(db_link)
+            db.commit()
+            return True
+        except Exception as e:
+            logger.error(f"用户 {user_id} 快速链接初始化失败: {e}")
+            db.rollback()
+            return False
+    
+    @staticmethod
+    def _init_user_search_engines(db: Session, user_id: int) -> bool:
+        """为用户初始化默认搜索引擎"""
+        try:
+            from ..models import SearchEngine
+            for engine_data in DefaultData.DEFAULT_SEARCH_ENGINES:
+                db_engine = SearchEngine(
+                    name=engine_data["name"],
+                    display_name=engine_data["display_name"],
+                    url_template=engine_data["url_template"],
+                    icon=engine_data["icon"],
+                    color=engine_data["color"],
+                    is_active=engine_data["is_active"],
+                    is_default=engine_data["is_default"],
+                    sort_order=engine_data["sort_order"],
+                    user_id=user_id
+                )
+                db.add(db_engine)
+            db.commit()
+            return True
+        except Exception as e:
+            logger.error(f"用户 {user_id} 搜索引擎初始化失败: {e}")
             db.rollback()
             return False 

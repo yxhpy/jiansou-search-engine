@@ -9,6 +9,37 @@ import { API_ENDPOINTS } from '../utils/constants.js';
  * 基础API请求类
  */
 class ApiService {
+    constructor() {
+        this.authService = null;
+    }
+
+    /**
+     * 设置认证服务
+     * @param {AuthService} authService 认证服务实例
+     */
+    setAuthService(authService) {
+        this.authService = authService;
+    }
+
+    /**
+     * 获取请求头
+     * @param {Object} customHeaders 自定义头部
+     * @returns {Object} 请求头
+     */
+    getHeaders(customHeaders = {}) {
+        const headers = {
+            'Content-Type': 'application/json',
+            ...customHeaders
+        };
+
+        // 如果已登录，添加认证头
+        if (this.authService && this.authService.isLoggedIn()) {
+            headers['Authorization'] = `Bearer ${this.authService.getToken()}`;
+        }
+
+        return headers;
+    }
+
     /**
      * 发送HTTP请求
      * @param {string} url 请求URL
@@ -16,16 +47,19 @@ class ApiService {
      * @returns {Promise} 请求结果
      */
     async request(url, options = {}) {
-        const defaultOptions = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        const config = {
+            ...options,
+            headers: this.getHeaders(options.headers)
         };
-
-        const config = { ...defaultOptions, ...options };
 
         try {
             const response = await fetch(url, config);
+            
+            // 如果是认证失败，尝试登出
+            if (response.status === 401 && this.authService) {
+                this.authService.logout();
+                throw new Error('登录已过期，请重新登录');
+            }
             
             if (!response.ok) {
                 const error = await response.json().catch(() => ({ detail: '请求失败' }));
@@ -213,7 +247,7 @@ export class SearchApi extends ApiService {
     }
 }
 
-// 创建API服务实例
+// 创建全局API服务实例
 export const quickLinksApi = new QuickLinksApi();
 export const searchEnginesApi = new SearchEnginesApi();
 export const searchApi = new SearchApi(); 

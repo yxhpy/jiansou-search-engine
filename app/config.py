@@ -55,6 +55,24 @@ class AppConfig:
     DEFAULT_SEARCH_HISTORY_LIMIT = 10
 
 
+class AuthConfig:
+    """认证配置"""
+    SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production")
+    ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 60  # 30天
+    
+    # 密码要求
+    MIN_PASSWORD_LENGTH = 6
+    
+    @classmethod
+    def get_secret_key(cls):
+        """获取密钥，如果是默认值则警告"""
+        if cls.SECRET_KEY == "your-secret-key-change-this-in-production":
+            import logging
+            logging.warning("使用默认密钥，生产环境中请更改SECRET_KEY环境变量")
+        return cls.SECRET_KEY
+
+
 class DefaultData:
     """默认数据配置"""
     

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证功能测试 - 简搜</title>
+    <!-- Tailwind CSS -->
+    <script src="/static/js/vendor/tailwindcss.min.js"></script>
+    <!-- FontAwesome -->
+    <link href="/static/css/vendor/fontawesome.css" rel="stylesheet" />
+    <link href="/static/css/vendor/solid.css" rel="stylesheet" />
+    <link href="/static/css/vendor/brands.css" rel="stylesheet" />
+    <link href="/static/css/vendor/v5-font-face.css" rel="stylesheet" />
+    
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'huawei-blue': '#007DFF',
+                        'huawei-gray': '#F5F5F5',
+                        'huawei-dark': '#1A1A1A',
+                        'huawei-text': '#333333',
+                        'huawei-light': '#FAFAFA',
+                    },
+                    fontFamily: {
+                        'huawei': ['SF Pro Display', 'PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'huawei': '0 2px 12px rgba(0, 0, 0, 0.08)',
+                        'huawei-hover': '0 4px 20px rgba(0, 125, 255, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+</head>
+<body class="bg-gray-50 min-h-screen font-huawei">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold text-center text-huawei-dark mb-8">登录注册功能测试</h1>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">当前状态</h2>
+                <div id="auth-status" class="text-gray-600">检查中...</div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">操作面板</h2>
+                <div class="flex gap-4 mb-4">
+                    <button id="test-login-btn" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        测试登录
+                    </button>
+                    <button id="test-register-btn" class="btn btn-secondary">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        测试注册
+                    </button>
+                    <button id="test-logout-btn" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        测试退出
+                    </button>
+                </div>
+                <div class="flex gap-4">
+                    <button id="check-auth-btn" class="btn bg-green-500 hover:bg-green-600 text-white">
+                        <i class="fas fa-sync mr-2"></i>
+                        检查认证状态
+                    </button>
+                    <button id="test-api-btn" class="btn bg-purple-500 hover:bg-purple-600 text-white">
+                        <i class="fas fa-server mr-2"></i>
+                        测试API
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">日志</h2>
+                <div id="log-container" class="bg-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
+                    <div class="text-gray-500">等待操作...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载认证组件 -->
+    <script type="module">
+        import { authService } from '/static/js/services/auth.js';
+        import { AuthModal } from '/static/js/components/AuthModal.js';
+        import { UserInfo } from '/static/js/components/UserInfo.js';
+        import { showSuccess, showError, showInfo } from '/static/js/services/notification.js';
+        
+        // 全局变量
+        window.authService = authService;
+        window.showSuccess = showSuccess;
+        window.showError = showError;
+        window.showInfo = showInfo;
+        
+        // 日志函数
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log-container');
+            const time = new Date().toLocaleTimeString();
+            const colors = {
+                info: 'text-blue-600',
+                success: 'text-green-600',
+                error: 'text-red-600',
+                warning: 'text-yellow-600'
+            };
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `mb-2 ${colors[type] || colors.info}`;
+            logEntry.innerHTML = `<span class="text-gray-400">[${time}]</span> ${message}`;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        window.log = log;
+        
+        // 更新认证状态
+        function updateAuthStatus() {
+            const statusEl = document.getElementById('auth-status');
+            if (authService.isLoggedIn()) {
+                const user = authService.getUser();
+                statusEl.innerHTML = `
+                    <div class="text-green-600">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        已登录: <strong>${user.username}</strong> (${user.email})
+                    </div>
+                `;
+            } else {
+                statusEl.innerHTML = `
+                    <div class="text-gray-600">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        未登录
+                    </div>
+                `;
+            }
+        }
+        
+        // 监听认证状态变化
+        authService.on('onLogin', (user) => {
+            log(`登录成功: ${user.username}`, 'success');
+            updateAuthStatus();
+        });
+        
+        authService.on('onLogout', () => {
+            log('已退出登录', 'info');
+            updateAuthStatus();
+        });
+        
+        authService.on('onError', (error) => {
+            log(`认证错误: ${error.message}`, 'error');
+        });
+        
+        // 绑定按钮事件
+        document.getElementById('test-login-btn').addEventListener('click', () => {
+            log('打开登录对话框');
+            if (window.authModal) {
+                window.authModal.show('login');
+            } else {
+                log('authModal 未找到', 'error');
+            }
+        });
+        
+        document.getElementById('test-register-btn').addEventListener('click', () => {
+            log('打开注册对话框');
+            if (window.authModal) {
+                window.authModal.show('register');
+            } else {
+                log('authModal 未找到', 'error');
+            }
+        });
+        
+        document.getElementById('test-logout-btn').addEventListener('click', () => {
+            log('执行退出登录');
+            authService.logout();
+        });
+        
+        document.getElementById('check-auth-btn').addEventListener('click', async () => {
+            log('检查认证状态');
+            try {
+                if (authService.isLoggedIn()) {
+                    await authService.getCurrentUser();
+                    log('认证状态检查完成', 'success');
+                } else {
+                    log('当前未登录状态');
+                }
+                updateAuthStatus();
+            } catch (error) {
+                log(`检查认证状态失败: ${error.message}`, 'error');
+            }
+        });
+        
+        document.getElementById('test-api-btn').addEventListener('click', async () => {
+            log('测试API端点');
+            try {
+                // 测试注册API
+                const testUsername = 'testuser_' + Date.now();
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: testUsername,
+                        email: `${testUsername}@test.com`,
+                        password: 'test123456'
+                    })
+                });
+                
+                if (response.ok) {
+                    log('API测试成功: 注册端点工作正常', 'success');
+                } else {
+                    const error = await response.json();
+                    log(`API测试失败: ${error.detail}`, 'error');
+                }
+            } catch (error) {
+                log(`API测试失败: ${error.message}`, 'error');
+            }
+        });
+        
+        // 初始化
+        setTimeout(() => {
+            updateAuthStatus();
+            log('页面初始化完成');
+            
+            // 检查组件是否正确加载
+            if (window.authModal) {
+                log('AuthModal 组件加载成功', 'success');
+            } else {
+                log('AuthModal 组件加载失败', 'error');
+            }
+            
+            if (window.userInfo) {
+                log('UserInfo 组件加载成功', 'success');
+            } else {
+                log('UserInfo 组件加载失败', 'error');
+            }
+        }, 1000);
+    </script>
+</body>
+</html> 

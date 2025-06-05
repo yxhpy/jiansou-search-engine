@@ -7,6 +7,7 @@ import { quickLinksApi } from '../services/api.js';
 import { showSuccess, showError } from '../services/notification.js';
 import { dom, events, validation } from '../utils/helpers.js';
 import { EVENTS, VALIDATION_RULES } from '../utils/constants.js';
+import { authService } from '../services/auth.js';
 
 /**
  * 快速链接管理组件类
@@ -28,6 +29,80 @@ export class QuickLinkManager {
         this.createModals();
         this.bindEvents();
         await this.loadData();
+        this.updateUIBasedOnAuth();
+        
+        // 监听登录状态变化
+        authService.on('onLogin', () => {
+            this.updateUIBasedOnAuth();
+        });
+        
+        authService.on('onLogout', () => {
+            this.updateUIBasedOnAuth();
+            this.exitEditMode(); // 退出编辑模式
+        });
+    }
+
+    /**
+     * 根据认证状态更新UI
+     */
+    updateUIBasedOnAuth() {
+        const isLoggedIn = authService.isLoggedIn();
+        
+        // 显示/隐藏管理按钮
+        const addLinkBtn = dom.get('#add-link-btn');
+        const editModeBtn = dom.get('#edit-mode-btn');
+        
+        if (addLinkBtn) {
+            if (isLoggedIn) {
+                dom.show(addLinkBtn);
+            } else {
+                dom.hide(addLinkBtn);
+            }
+        }
+        
+        if (editModeBtn) {
+            if (isLoggedIn) {
+                dom.show(editModeBtn);
+            } else {
+                dom.hide(editModeBtn);
+            }
+        }
+        
+        // 如果未登录，退出编辑模式
+        if (!isLoggedIn && this.editMode) {
+            this.exitEditMode();
+        }
+    }
+
+    /**
+     * 退出编辑模式
+     */
+    exitEditMode() {
+        if (this.editMode) {
+            this.editMode = false;
+            const editBtn = dom.get('#edit-mode-btn');
+            const quickLinkItems = dom.getAll('.quick-link-item');
+            
+            if (editBtn) {
+                editBtn.innerHTML = '<i class="fas fa-edit text-xs sm:text-sm"></i>';
+                editBtn.classList.remove('bg-green-500', 'text-white', 'hover:bg-green-600');
+                editBtn.classList.add('text-gray-500', 'hover:text-huawei-blue', 'hover:bg-gray-50');
+            }
+            
+            // 移除编辑按钮并恢复链接功能
+            quickLinkItems.forEach(item => {
+                const editControls = item.querySelector('.edit-controls');
+                if (editControls) {
+                    editControls.remove();
+                }
+                
+                // 恢复链接点击事件
+                const linkElement = item.querySelector('a');
+                if (linkElement) {
+                    linkElement.style.pointerEvents = 'auto';
+                }
+            });
+        }
     }
 
     /**
@@ -253,6 +328,12 @@ export class QuickLinkManager {
      * 切换编辑模式
      */
     toggleEditMode() {
+        // 检查是否已登录
+        if (!authService.isLoggedIn()) {
+            showError('请先登录后再进行管理操作');
+            return;
+        }
+        
         this.editMode = !this.editMode;
         const editBtn = dom.get('#edit-mode-btn');
         const quickLinkItems = dom.getAll('.quick-link-item');
@@ -310,6 +391,12 @@ export class QuickLinkManager {
      * 显示添加链接模态框
      */
     showAddLinkModal() {
+        // 检查是否已登录
+        if (!authService.isLoggedIn()) {
+            showError('请先登录后再进行管理操作');
+            return;
+        }
+        
         this.currentEditId = null;
         dom.get('#link-modal-title').textContent = '添加快速链接';
         this.clearLinkForm();

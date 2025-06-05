@@ -1,9 +1,47 @@
 """
 Pydantic数据模式定义
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
+
+
+# 用户认证相关模式
+class UserCreate(BaseModel):
+    """创建用户的请求模式"""
+    username: str
+    email: EmailStr
+    password: str
+
+
+class UserLogin(BaseModel):
+    """用户登录的请求模式"""
+    username: str
+    password: str
+
+
+class UserResponse(BaseModel):
+    """用户信息响应模式"""
+    id: int
+    username: str
+    email: str
+    is_active: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class Token(BaseModel):
+    """JWT令牌响应模式"""
+    access_token: str
+    token_type: str
+    user: UserResponse
+
+
+class TokenData(BaseModel):
+    """JWT令牌数据模式"""
+    username: Optional[str] = None
 
 
 # 快速链接相关模式

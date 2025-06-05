@@ -7,6 +7,7 @@ import { searchEnginesApi } from '../services/api.js';
 import { showSuccess, showError } from '../services/notification.js';
 import { dom, events, validation } from '../utils/helpers.js';
 import { EVENTS, VALIDATION_RULES } from '../utils/constants.js';
+import { authService } from '../services/auth.js';
 
 /**
  * 搜索引擎管理组件类
@@ -16,6 +17,7 @@ export class SearchEngineManager {
         this.searchEngines = [];
         this.currentEditId = null;
         this.isModalOpen = false;
+        this.editMode = false;
         
         this.init();
     }
@@ -26,7 +28,35 @@ export class SearchEngineManager {
     async init() {
         this.createModals();
         this.bindEvents();
-        await this.loadSearchEngines();
+        await this.loadData();
+        this.updateUIBasedOnAuth();
+        
+        // 监听登录状态变化
+        authService.on('onLogin', () => {
+            this.updateUIBasedOnAuth();
+        });
+        
+        authService.on('onLogout', () => {
+            this.updateUIBasedOnAuth();
+        });
+    }
+
+    /**
+     * 根据认证状态更新UI
+     */
+    updateUIBasedOnAuth() {
+        const isLoggedIn = authService.isLoggedIn();
+        
+        // 显示/隐藏搜索引擎管理按钮
+        const manageEnginesBtn = dom.get('#manage-engines-btn');
+        
+        if (manageEnginesBtn) {
+            if (isLoggedIn) {
+                dom.show(manageEnginesBtn);
+            } else {
+                dom.hide(manageEnginesBtn);
+            }
+        }
     }
 
     /**
@@ -132,6 +162,13 @@ export class SearchEngineManager {
 
         document.body.appendChild(enginesModal);
         document.body.appendChild(engineFormModal);
+    }
+
+    /**
+     * 加载数据
+     */
+    async loadData() {
+        await this.loadSearchEngines();
     }
 
     /**
@@ -256,6 +293,12 @@ export class SearchEngineManager {
      * 显示搜索引擎管理模态框
      */
     showEnginesModal() {
+        // 检查是否已登录
+        if (!authService.isLoggedIn()) {
+            showError('请先登录后再进行管理操作');
+            return;
+        }
+        
         this.isModalOpen = true;
         dom.show(dom.get('#engines-modal'));
         this.renderSearchEnginesList();
@@ -273,6 +316,12 @@ export class SearchEngineManager {
      * 显示添加搜索引擎模态框
      */
     showAddEngineModal() {
+        // 检查是否已登录
+        if (!authService.isLoggedIn()) {
+            showError('请先登录后再进行管理操作');
+            return;
+        }
+        
         this.currentEditId = null;
         dom.get('#engine-modal-title').textContent = '添加搜索引擎';
         this.clearEngineForm();

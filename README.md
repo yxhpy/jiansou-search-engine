@@ -9,6 +9,8 @@
 
 ## ✨ 项目特性
 
+- 👤 **用户认证系统** - 支持用户注册、登录，JWT令牌认证
+- 🔒 **数据完全隔离** - 每个用户拥有独立的配置和数据
 - 🔍 **多搜索引擎支持** - 百度、Google、必应等主流搜索引擎
 - 🔗 **智能快速链接** - 支持分类管理和自动图标识别
 - 📱 **响应式设计** - 完美适配桌面端和移动端
@@ -29,6 +31,8 @@
 - **Uvicorn 0.24.0** - Lightning-fast ASGI服务器
 - **PyMySQL 1.1.0** - 纯Python MySQL客户端
 - **python-dotenv 1.0.0** - 环境变量管理
+- **python-jose 3.3.0** - JWT令牌处理
+- **passlib 1.7.4** - 密码加密和验证
 
 ### 前端
 - **原生JavaScript (ES6+)** - 模块化前端架构
@@ -120,7 +124,13 @@
 3. **访问应用**
    ```
    🌐 http://localhost:8000
+   🔐 http://localhost:8000/auth-test (认证功能测试)
    ```
+
+   **首次使用 (v2.0+):**
+   - 如果是全新安装，直接注册新用户
+   - 如果从v1.x升级，运行迁移脚本：`python migrate_add_users.py`
+   - 默认管理员账户：admin / admin123 (请及时更改密码)
 
 ### 方式二：本地开发
 
@@ -201,13 +211,18 @@ CORS_ORIGINS=["http://localhost:8000"]  # 允许的跨域来源
 
 ### 🔗 主要API端点
 
-#### 搜索引擎管理
+#### 用户认证 (v2.0新增)
+- `POST /api/auth/register` - 用户注册
+- `POST /api/auth/login` - 用户登录
+- `GET /api/auth/me` - 获取当前用户信息
+
+#### 搜索引擎管理 (需要认证)
 - `GET /api/search-engines` - 获取搜索引擎列表
 - `POST /api/search-engines` - 添加新的搜索引擎
 - `PUT /api/search-engines/{id}` - 更新搜索引擎配置
 - `DELETE /api/search-engines/{id}` - 删除搜索引擎
 
-#### 快速链接管理
+#### 快速链接管理 (需要认证)
 - `GET /api/quick-links` - 获取快速链接列表
 - `POST /api/quick-links` - 添加新的快速链接
 - `PUT /api/quick-links/{id}` - 更新快速链接

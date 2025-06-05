@@ -8,6 +8,10 @@ import { QuickLinks } from './components/QuickLinks.js';
 import { SearchEngineManager } from './components/SearchEngineManager.js';
 import { QuickLinkManager } from './components/QuickLinkManager.js';
 import { WallpaperManager } from './components/WallpaperManager.js';
+import { AuthModal } from './components/AuthModal.js';
+import { UserInfo } from './components/UserInfo.js';
+import { authService } from './services/auth.js';
+import { quickLinksApi, searchEnginesApi, searchApi } from './services/api.js';
 import { showSuccess, showError } from './services/notification.js';
 import { dom, events } from './utils/helpers.js';
 
@@ -21,6 +25,8 @@ class App {
         this.searchEngineManager = null;
         this.quickLinkManager = null;
         this.wallpaperManager = null;
+        this.authModal = null;
+        this.userInfo = null;
         this.isInitialized = false;
         
         this.init();
@@ -60,6 +66,15 @@ class App {
      * 初始化组件
      */
     async initializeComponents() {
+        // 设置API服务的认证服务
+        quickLinksApi.setAuthService(authService);
+        searchEnginesApi.setAuthService(authService);
+        searchApi.setAuthService(authService);
+
+        // 初始化认证相关组件（它们在模块加载时自动创建）
+        this.authModal = window.authModal;
+        this.userInfo = window.userInfo;
+
         // 初始化搜索框组件
         const searchContainer = dom.get('#search-container');
         if (searchContainer) {
@@ -84,6 +99,15 @@ class App {
 
         // 初始化移动端菜单
         this.initializeMobileMenu();
+
+        // 监听登录状态变化，刷新数据
+        authService.on('onLogin', () => {
+            this.refreshAllData();
+        });
+
+        authService.on('onLogout', () => {
+            this.refreshAllData();
+        });
     }
 
     /**
@@ -244,6 +268,13 @@ class App {
      * 刷新数据
      */
     async refreshData() {
+        this.refreshAllData();
+    }
+
+    /**
+     * 刷新所有数据
+     */
+    async refreshAllData() {
         try {
             const promises = [];
             
@@ -268,6 +299,7 @@ class App {
             }
 
             await Promise.all(promises);
+            console.log('所有数据刷新完成');
             
         } catch (error) {
             console.error('刷新数据失败:', error);
@@ -324,6 +356,8 @@ class App {
     }
 }
 
+// 使用认证服务实例
+
 // 创建全局应用实例
 const app = new App();
 
@@ -333,4 +367,5 @@ export default app;
 // 将应用实例挂载到全局对象，方便调试
 if (typeof window !== 'undefined') {
     window.app = app;
+    window.authService = authService;
 } 
