@@ -116,13 +116,15 @@ export class SearchBox {
         });
 
         events.on(searchInput, 'focus', () => {
-            this.hideQuickLinks();
-            this.showSearchSuggestions();
+            // 聚焦时不隐藏快速链接，只有在有内容时才隐藏
+            // this.hideQuickLinks();
+            // this.showSearchSuggestions();
         });
 
         events.on(searchInput, 'blur', () => {
             // 延迟检查，给用户点击搜索建议的时间
             setTimeout(() => {
+                // 失去焦点时，如果没有内容，确保快链显示
                 if (!searchInput.value.trim() && !dom.get('#search-engines-dropdown.show')) {
                     this.showQuickLinks();
                 }
@@ -144,6 +146,15 @@ export class SearchBox {
         // 监听搜索引擎数据更新
         events.on(document, EVENTS.SEARCH_ENGINES_LOADED, () => {
             this.loadSearchEngines();
+        });
+
+        // 监听窗口滚动和大小调整，更新下拉菜单位置
+        events.on(window, 'scroll', () => {
+            this.updateDropdownPosition();
+        });
+
+        events.on(window, 'resize', () => {
+            this.updateDropdownPosition();
         });
     }
 
@@ -370,12 +381,20 @@ export class SearchBox {
     showEnginesDropdown() {
         const dropdown = dom.get('#search-engines-dropdown');
         const indicator = dom.get('#search-engine-indicator');
+        const searchForm = dom.get('#search-form');
+        
+        // 计算搜索框的位置
+        const rect = searchForm.getBoundingClientRect();
+        
+        // 设置下拉菜单的位置
+        dropdown.style.top = `${rect.bottom + 8}px`;
+        dropdown.style.left = `${rect.left}px`;
+        dropdown.style.width = `${rect.width}px`;
         
         dropdown.classList.add('show');
         indicator.classList.add('active');
         
-        // 隐藏快链
-        this.hideQuickLinks();
+        // 不隐藏快链，让下拉菜单叠加显示
         
         // 添加动画效果
         setTimeout(() => {
@@ -395,12 +414,35 @@ export class SearchBox {
         
         setTimeout(() => {
             dropdown.classList.remove('show');
-            // 检查是否应该显示快链
-            const searchInput = dom.get('#search-input');
-            if (!searchInput.value.trim() && document.activeElement !== searchInput) {
-                this.showQuickLinks();
-            }
+            // 不需要重新显示快链，因为没有隐藏过
         }, 200);
+    }
+
+    /**
+     * 更新下拉菜单位置
+     */
+    updateDropdownPosition() {
+        const dropdown = dom.get('#search-engines-dropdown');
+        const suggestions = dom.get('#search-suggestions');
+        const searchForm = dom.get('#search-form');
+        
+        if (searchForm) {
+            const rect = searchForm.getBoundingClientRect();
+            
+            // 更新搜索引擎下拉菜单位置
+            if (dropdown.classList.contains('show')) {
+                dropdown.style.top = `${rect.bottom + 8}px`;
+                dropdown.style.left = `${rect.left}px`;
+                dropdown.style.width = `${rect.width}px`;
+            }
+            
+            // 更新搜索建议位置
+            if (suggestions.classList.contains('show')) {
+                suggestions.style.top = `${rect.bottom + 8}px`;
+                suggestions.style.left = `${rect.left}px`;
+                suggestions.style.width = `${rect.width}px`;
+            }
+        }
     }
 
     /**
@@ -412,11 +454,8 @@ export class SearchBox {
             this.showSearchSuggestions(value);
         } else {
             this.hideSearchSuggestions();
-            // 如果输入框为空且没有焦点，显示快链
-            const searchInput = dom.get('#search-input');
-            if (document.activeElement !== searchInput && !dom.get('#search-engines-dropdown.show')) {
-                this.showQuickLinks();
-            }
+            // 如果输入框为空，立即显示快链
+            this.showQuickLinks();
         }
     }
 
@@ -425,8 +464,17 @@ export class SearchBox {
      */
     showSearchSuggestions(query = '') {
         const suggestions = dom.get('#search-suggestions');
+        const searchForm = dom.get('#search-form');
         
         if (query) {
+            // 计算搜索框的位置
+            const rect = searchForm.getBoundingClientRect();
+            
+            // 设置搜索建议的位置
+            suggestions.style.top = `${rect.bottom + 8}px`;
+            suggestions.style.left = `${rect.left}px`;
+            suggestions.style.width = `${rect.width}px`;
+            
             // 这里可以添加搜索建议的逻辑
             // 暂时显示一些示例建议
             const sampleSuggestions = [

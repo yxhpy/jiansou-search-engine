@@ -906,6 +906,12 @@
     }
 }
 
+/* 搜索容器 - 确保层级正确 */
+#search-container {
+    position: relative;
+    z-index: 10;
+}
+
 /* 现代化搜索界面样式 */
 .search-wrapper {
     position: relative;
@@ -1049,10 +1055,7 @@
 
 /* 搜索引擎下拉菜单 */
 .search-engines-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
+    position: fixed;
     z-index: 1100;
     margin-top: 8px;
     opacity: 0;
@@ -1147,10 +1150,7 @@
 
 /* 搜索建议 */
 .search-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
+    position: fixed;
     z-index: 1099;
     margin-top: 8px;
     opacity: 0;
