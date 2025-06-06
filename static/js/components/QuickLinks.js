@@ -295,7 +295,10 @@ export class QuickLinks {
      */
     async loadQuickLinks() {
         try {
+            console.log(`正在加载快速链接，当前分类: "${this.currentCategory}"`);
             this.quickLinks = await quickLinksApi.getQuickLinks(this.currentCategory);
+            console.log(`快速链接加载成功，共 ${this.quickLinks.length} 个链接:`, this.quickLinks.map(link => `${link.name}(${link.category})`));
+            
             this.updatePagination();
             this.renderCurrentPage();
             this.updatePageIndicators();
@@ -543,6 +546,8 @@ export class QuickLinks {
     async setCategory(category) {
         if (category === this.currentCategory) return;
 
+        console.log(`分类切换: 从 "${this.currentCategory}" 到 "${category}"`);
+        
         this.currentCategory = category;
         setCurrentCategory(category);
         
@@ -559,8 +564,15 @@ export class QuickLinks {
         // 重置到第一页
         this.currentPage = 0;
         
-        // 重新加载数据
-        await this.loadQuickLinks();
+        // 重新加载数据并添加调试信息
+        try {
+            console.log(`开始加载分类 "${category}" 的数据...`);
+            await this.loadQuickLinks();
+            console.log(`分类 "${category}" 的数据加载完成，共 ${this.quickLinks.length} 个链接`);
+        } catch (error) {
+            console.error(`加载分类 "${category}" 的数据时出错:`, error);
+            showError(`切换到分类 "${category}" 失败`);
+        }
     }
 
     /**

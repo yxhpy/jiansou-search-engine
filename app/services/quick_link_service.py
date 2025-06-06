@@ -18,7 +18,14 @@ class QuickLinkService:
         """获取用户的快速链接列表，如果没有用户ID则返回默认数据"""
         if user_id is None:
             # 返回默认快速链接数据（用于未登录用户）
-            return QuickLinkService._get_default_quick_links()
+            default_links = QuickLinkService._get_default_quick_links()
+            
+            # 如果指定了分类且不是"all"，则进行筛选
+            if category and category != "all":
+                default_links = [link for link in default_links if link.category == category]
+                print(f"未登录用户分类筛选: {category}, 筛选后链接数: {len(default_links)}")
+            
+            return default_links
         
         query = db.query(QuickLink).filter(QuickLink.user_id == user_id)
         if category and category != "all":
