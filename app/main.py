@@ -72,6 +72,10 @@ app.include_router(auth.router)
 from .routers import wallpaper
 app.include_router(wallpaper.router)
 
+# 导入头像路由
+from .routers import avatar
+app.include_router(avatar.router)
+
 
 @app.get("/")
 def read_index():

@@ -16,6 +16,9 @@ class User(Base):
     username = Column(String(100), unique=True, index=True, nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
+    display_name = Column(String(255), nullable=True)  # 显示名称
+    bio = Column(String(500), nullable=True)  # 个人简介
+    avatar_url = Column(String(512), nullable=True)  # 头像URL
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

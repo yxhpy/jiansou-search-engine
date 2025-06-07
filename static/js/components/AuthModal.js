@@ -28,7 +28,7 @@ export class AuthModal {
                     <div class="modal-header">
                         <h2 class="modal-title flex items-center gap-3">
                             <div class="w-8 h-8 bg-gradient-to-br from-huawei-blue to-blue-600 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-user text-white text-sm"></i>
+                                <i class="fas fa-question text-white text-sm"></i>
                             </div>
                             <span id="auth-title">用户登录</span>
                         </h2>
@@ -39,6 +39,14 @@ export class AuthModal {
 
                     <!-- 模态框内容 -->
                     <div class="modal-body">
+                        <!-- 错误消息区域 -->
+                        <div id="auth-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg shadow-sm">
+                            <div class="flex items-start gap-2">
+                                <i class="fas fa-exclamation-circle text-red-500 text-sm mt-0.5 flex-shrink-0"></i>
+                                <span id="auth-error-text" class="text-sm text-red-700 leading-relaxed"></span>
+                            </div>
+                        </div>
+
                         <!-- 登录表单 -->
                         <form id="login-form" class="space-y-4">
                             <div class="form-group">
@@ -197,6 +205,7 @@ export class AuthModal {
         const modeSwitchText = dom.get('#mode-switch-text');
         const modeSwitchBtn = dom.get('#mode-switch-btn');
         const submitText = dom.get('#submit-text');
+        const titleIcon = this.modal.querySelector('.modal-title i');
 
         if (this.currentMode === 'login') {
             title.textContent = '用户登录';
@@ -205,6 +214,10 @@ export class AuthModal {
             modeSwitchText.textContent = '还没有账号？';
             modeSwitchBtn.textContent = '立即注册';
             submitText.textContent = '登录';
+            // 更新图标为登录图标
+            if (titleIcon) {
+                titleIcon.className = 'fas fa-cog text-white text-sm';
+            }
         } else {
             title.textContent = '用户注册';
             loginForm.classList.add('hidden');
@@ -212,6 +225,10 @@ export class AuthModal {
             modeSwitchText.textContent = '已有账号？';
             modeSwitchBtn.textContent = '立即登录';
             submitText.textContent = '注册';
+            // 更新图标为注册图标
+            if (titleIcon) {
+                titleIcon.className = 'fas fa-plus text-white text-sm';
+            }
         }
     }
 
@@ -221,6 +238,8 @@ export class AuthModal {
     async handleSubmit() {
         if (this.isLoading) return;
 
+        // 隐藏之前的错误消息
+        this.hideError();
         this.setLoading(true);
 
         try {
@@ -232,6 +251,8 @@ export class AuthModal {
             this.hide();
         } catch (error) {
             console.error('认证失败:', error);
+            // 在模态框内显示错误消息
+            this.showError(error.message || '操作失败，请重试');
         } finally {
             this.setLoading(false);
         }
@@ -310,11 +331,43 @@ export class AuthModal {
     }
 
     /**
+     * 显示错误消息
+     */
+    showError(message) {
+        const errorDiv = dom.get('#auth-error');
+        const errorText = dom.get('#auth-error-text');
+        
+        errorText.textContent = message;
+        errorDiv.classList.remove('hidden');
+        
+        // 触发摇晃动画
+        errorDiv.classList.remove('animate-shake');
+        // 强制重新计算样式，确保动画能重新播放
+        errorDiv.offsetHeight;
+        errorDiv.classList.add('animate-shake');
+        
+        // 滚动到错误消息位置
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /**
+     * 隐藏错误消息
+     */
+    hideError() {
+        const errorDiv = dom.get('#auth-error');
+        errorDiv.classList.add('hidden');
+    }
+
+    /**
      * 重置表单
      */
     resetForm() {
         const forms = this.modal.querySelectorAll('form');
         forms.forEach(form => form.reset());
+        
+        // 隐藏错误消息
+        this.hideError();
+        
         this.setLoading(false);
     }
 

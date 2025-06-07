@@ -1026,4 +1026,159 @@ body.has-wallpaper h1 {
         0 2px 6px rgba(0, 0, 0, 1),
         0 0 20px rgba(0, 0, 0, 0.5); /* 三重阴影确保最佳可读性 */
     font-weight: 700;
+}
+
+/* 错误消息动画效果 */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+.animate-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* 错误消息渐入效果 */
+@keyframes fadeInError {
+    0% { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+#auth-error:not(.hidden) {
+    animation: fadeInError 0.3s ease-out;
+}
+
+/* 用户信息组件样式增强 */
+#user-menu-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+#user-menu-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.4) 50%, 
+        transparent 100%);
+    transition: left 0.6s ease;
+}
+
+#user-menu-btn:hover::before {
+    left: 100%;
+}
+
+/* 用户下拉菜单增强效果 */
+#user-dropdown {
+    backdrop-filter: blur(20px) saturate(180%);
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.95) 0%, 
+        rgba(248, 250, 252, 0.9) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 10px 20px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* 在线状态动画 */
+@keyframes pulse-green {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+.animate-pulse-green {
+    animation: pulse-green 2s ease-in-out infinite;
+}
+
+/* 菜单项悬停效果 */
+#user-dropdown button {
+    position: relative;
+    overflow: hidden;
+}
+
+#user-dropdown button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 100%);
+    transition: left 0.5s ease;
+}
+
+#user-dropdown button:hover::before {
+    left: 100%;
+}
+
+/* 用户信息编辑模态框样式 */
+#user-profile-modal .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#user-profile-modal .form-input[readonly] {
+    background-color: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+#user-profile-modal textarea.form-input {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* 头像区域样式 */
+#user-profile-modal .avatar-section {
+    position: relative;
+}
+
+#user-profile-modal .avatar-section button {
+    transform: scale(0);
+    transition: transform 0.2s ease-out;
+}
+
+#user-profile-modal .avatar-section:hover button {
+    transform: scale(1);
+}
+
+/* 成功消息动画 */
+@keyframes fadeInSuccess {
+    0% { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+#profile-success:not(.hidden) {
+    animation: fadeInSuccess 0.3s ease-out;
+}
+
+#profile-error:not(.hidden) {
+    animation: fadeInError 0.3s ease-out;
 } 

@@ -62,7 +62,8 @@ export class AuthService {
             showSuccess('注册成功！请登录');
             return data;
         } catch (error) {
-            showError(error.message);
+            // 不在这里显示全局错误通知，由调用方处理
+            // showError(error.message);
             throw error;
         }
     }
@@ -97,7 +98,8 @@ export class AuthService {
             showSuccess(`欢迎回来，${this.user.username}！`);
             return data;
         } catch (error) {
-            showError(error.message);
+            // 不在这里显示全局错误通知，由调用方处理
+            // showError(error.message);
             this.triggerCallbacks('onError', error);
             throw error;
         }
@@ -161,23 +163,31 @@ export class AuthService {
     /**
      * 获取认证头
      */
-    getAuthHeaders() {
+    getAuthHeaders(includeContentType = true) {
         if (!this.token) {
             throw new Error('未登录');
         }
         
-        return {
-            'Authorization': `Bearer ${this.token}`,
-            'Content-Type': 'application/json'
+        const headers = {
+            'Authorization': `Bearer ${this.token}`
         };
+        
+        if (includeContentType) {
+            headers['Content-Type'] = 'application/json';
+        }
+        
+        return headers;
     }
 
     /**
      * 发送认证请求
      */
     async authenticatedFetch(url, options = {}) {
+        // 检查是否是FormData，如果是则不设置Content-Type
+        const isFormData = options.body instanceof FormData;
+        
         const headers = {
-            ...this.getAuthHeaders(),
+            ...this.getAuthHeaders(!isFormData),
             ...(options.headers || {})
         };
 

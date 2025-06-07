@@ -25,11 +25,23 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: str
+    display_name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
     is_active: bool
     created_at: datetime
     
     class Config:
         from_attributes = True
+
+
+class UserProfileUpdate(BaseModel):
+    """用户信息更新请求模式"""
+    email: Optional[EmailStr] = None
+    display_name: Optional[str] = None
+    bio: Optional[str] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
 
 
 class Token(BaseModel):

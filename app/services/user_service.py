@@ -6,8 +6,8 @@ from typing import Optional
 from datetime import timedelta
 
 from ..models import User
-from ..schemas import UserCreate, UserLogin, Token, UserResponse
-from ..auth import get_password_hash, authenticate_user, create_access_token
+from ..schemas import UserCreate, UserLogin, Token, UserResponse, UserProfileUpdate
+from ..auth import get_password_hash, authenticate_user, create_access_token, verify_password
 from ..config import AuthConfig
 from .data_init_service import DataInitService
 
@@ -62,6 +62,9 @@ class UserService:
             id=user.id,
             username=user.username,
             email=user.email,
+            display_name=user.display_name,
+            bio=user.bio,
+            avatar_url=user.avatar_url,
             is_active=user.is_active,
             created_at=user.created_at
         )
@@ -80,4 +83,50 @@ class UserService:
     @staticmethod
     def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
         """根据ID获取用户"""
-        return db.query(User).filter(User.id == user_id).first() 
+        return db.query(User).filter(User.id == user_id).first()
+    
+    @staticmethod
+    def update_user_profile(db: Session, user_id: int, update_data: UserProfileUpdate) -> Optional[User]:
+        """更新用户信息"""
+        # 获取用户
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return None
+        
+        # 如果需要修改密码，验证当前密码
+        if update_data.new_password:
+            if not update_data.current_password:
+                raise ValueError("修改密码时必须提供当前密码")
+            
+            if not verify_password(update_data.current_password, user.hashed_password):
+                raise ValueError("当前密码不正确")
+            
+            # 验证新密码长度
+            if len(update_data.new_password) < AuthConfig.MIN_PASSWORD_LENGTH:
+                raise ValueError(f"新密码长度至少{AuthConfig.MIN_PASSWORD_LENGTH}位")
+            
+            # 更新密码
+            user.hashed_password = get_password_hash(update_data.new_password)
+        
+        # 如果要更新邮箱，检查邮箱是否已被其他用户使用
+        if update_data.email and update_data.email != user.email:
+            existing_user = db.query(User).filter(
+                User.email == update_data.email,
+                User.id != user_id
+            ).first()
+            if existing_user:
+                raise ValueError("邮箱已被其他用户使用")
+            user.email = update_data.email
+        
+        # 更新其他字段
+        if update_data.display_name is not None:
+            user.display_name = update_data.display_name.strip() if update_data.display_name.strip() else None
+        
+        if update_data.bio is not None:
+            user.bio = update_data.bio.strip() if update_data.bio.strip() else None
+        
+        # 保存更改
+        db.commit()
+        db.refresh(user)
+        
+        return user 

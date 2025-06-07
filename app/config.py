@@ -73,6 +73,30 @@ class AuthConfig:
         return cls.SECRET_KEY
 
 
+class WebDAVConfig:
+    """WebDAV文件存储配置"""
+    URL = os.getenv("WEBDAV_URL", "")
+    USERNAME = os.getenv("WEBDAV_USERNAME", "")
+    PASSWORD = os.getenv("WEBDAV_PASSWORD", "")
+    
+    # 头像存储配置
+    AVATAR_PATH = "avatars/"  # WebDAV上的头像目录
+    MAX_FILE_SIZE = 2 * 1024 * 1024  # 2MB
+    ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+    
+    @classmethod
+    def is_configured(cls):
+        """检查WebDAV是否已配置"""
+        return bool(cls.URL and cls.USERNAME and cls.PASSWORD)
+    
+    @classmethod
+    def get_avatar_url(cls, filename):
+        """获取头像的完整URL"""
+        if not cls.is_configured():
+            return None
+        return f"{cls.URL.rstrip('/')}/{cls.AVATAR_PATH}{filename}"
+
+
 class DefaultData:
     """默认数据配置"""
     
